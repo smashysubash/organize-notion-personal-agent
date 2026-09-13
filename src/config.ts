@@ -31,7 +31,7 @@ function llmConfig() {
     return {
       provider: "openai" as const,
       apiKey: process.env.LLM_API_KEY ?? required("GROQ_API_KEY"),
-      model: process.env.LLM_MODEL ?? "llama-3.1-70b-versatile",
+      model: process.env.LLM_MODEL ?? "qwen/qwen3.8-27b",
       baseUrl: "https://api.groq.com/openai/v1",
     };
   }

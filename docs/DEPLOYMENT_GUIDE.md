@@ -32,10 +32,10 @@ LLM_PROVIDER=nvidia
 NVIDIA_API_KEY=nvapi_xxxxxxxxxxxx
 # LLM_MODEL=nvidia/nemotron-3-ultra  # optional, defaults to nemotron-3-ultra
 
-# Option B: Groq (Llama 3.1 70B - fastest inference)
+# Option B: Groq (Fastest inference)
 # LLM_PROVIDER=groq
 # GROQ_API_KEY=gsk_xxxxxxxxxxxx
-# LLM_MODEL=llama-3.1-70b-versatile  # optional
+# LLM_MODEL=qwen/qwen3.8-27b  # optional, defaults to qwen/qwen3.8-27b
 
 # Optional cron overrides (default: Monday mornings)
 DIGEST_CRON="0 8 * * 1"
@@ -162,10 +162,10 @@ In Coolify, simply click **Redeploy** on your application to pull the newest ima
 ### Groq Models (free at console.groq.com)
 | Model ID | Context | Notes |
 |----------|---------|-------|
-| `llama-3.1-70b-versatile` | 128k | Default, best quality |
-| `llama-3.1-8b-instant` | 128k | Faster, lower quality |
-| `mixtral-8x7b-32768` | 32k | Good alternative |
-| `gemma2-9b-it` | 8k | Small, fast |
+| `qwen/qwen3.8-27b` | 128k | Default, fast & high quality instruction following |
+| `openai/gpt-oss-120b` | 128k | Large open-weights reasoning model |
+| `openai/gpt-oss-20b` | 128k | Fast open-weights model |
+| `qwen/qwen3.6-27b` | 128k | Good alternative |
 
 ---
 
