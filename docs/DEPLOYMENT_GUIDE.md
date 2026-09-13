@@ -1,26 +1,28 @@
-# Coolify Deployment Guide — Second Brain Agent
+# Deployment Guide — Second Brain Agent
 
-Deploy the Second Brain Agent to Coolify on your LAN with NVIDIA or Groq free APIs.
+Deploy the Second Brain Agent using Docker Compose locally or via Coolify on your LAN/server.
 
 ---
 
 ## Prerequisites
 
-- A machine on your LAN running 24/7 (Proxmox VM, Raspberry Pi 4+, old laptop, etc.)
-- Coolify installed on that machine
-- Git repository with this code pushed (GitHub, GitLab, Gitea, etc.)
-- Notion internal integration created and shared with your "🧠 Second Brain" page
+- A machine running 24/7 (Local server, Proxmox VM, Raspberry Pi 4+, Linux host, etc.)
+- Docker & Docker Compose installed (or Coolify)
+- Notion internal integration created and shared with your **🧠 Second Brain** page
+- LLM API key (NVIDIA, Groq, Anthropic, or OpenAI)
 
 ---
 
-## Quick Start
+## Environment Configuration
 
-### 1. Configure Environment Variables
-
-Copy `.env.example` to `.env` and fill in:
+Copy `.env.example` to `.env` and configure your credentials:
 
 ```bash
-# Required
+cp .env.example .env
+```
+
+```bash
+# Required Notion Secret
 NOTION_API_KEY=secret_xxxxxxxxxxxx
 
 # Choose ONE LLM provider:
@@ -39,30 +41,104 @@ NVIDIA_API_KEY=nvapi_xxxxxxxxxxxx
 DIGEST_CRON="0 8 * * 1"
 HYGIENE_CRON="0 9 * * 1"
 LINKEDIN_CRON="0 10 * * 1"
+PORT=4173
 ```
 
-### 2. Deploy to Coolify
+---
 
-1. **Create Application** in Coolify
-   - Source: Your Git repo
+## Method 1: Local Docker Compose (Direct from Repo)
+
+Deploy directly on your local machine / server from this repository folder:
+
+### 1. Build and Run in Detached Mode
+```bash
+docker compose up -d --build
+```
+
+### 2. View Logs
+```bash
+docker compose logs -f
+```
+
+### 3. Management Commands
+- **Stop**: `docker compose down`
+- **Restart**: `docker compose restart`
+- **Rebuild after updates**: `docker compose up -d --build`
+
+### 4. Access
+- Open `http://localhost:4173` (or `http://<your-host-ip>:4173`) from your browser.
+
+---
+
+## Method 2: Deploy Pre-built Image on Coolify (Recommended — Zero Server Build Time)
+
+The repository includes a GitHub Actions CI/CD workflow that automatically builds multi-arch Docker images (`linux/amd64` and `linux/arm64`) and publishes them to **GitHub Container Registry (GHCR)** on every push to `main` or version tag release.
+
+### 1. In Coolify, Create a Docker Image Resource
+1. Go to your Project / Environment in Coolify.
+2. Click **+ Add Resource** → **Docker Image**.
+3. Set **Image Name**:
+   ```
+   ghcr.io/smashysubash/organize-notion-personal-agent:latest
+   ```
+   *(Or specify a pinned version tag like `:v0.1.0`)*
+4. Set **Port**: `4173`.
+
+> [!NOTE]
+> If your GitHub repository / package is **private**, add GHCR credentials in Coolify:
+> - **Coolify** → **Sources / Registries** → **+ Add Registry** → **Custom/GitHub Container Registry**.
+> - Server: `ghcr.io`
+> - Username: your GitHub username
+> - Password: a GitHub Personal Access Token (PAT) with `read:packages` scope.
+
+### 2. Configure Environment Variables
+In Coolify → Application → **Environment**:
+- Add your variables from `.env` (`NOTION_API_KEY`, `LLM_PROVIDER`, `NVIDIA_API_KEY` / `GROQ_API_KEY`, `PORT=4173`).
+
+### 3. Deploy
+- Click **Deploy**. Coolify pulls the pre-built image and starts the container in seconds.
+
+---
+
+## Method 3: Deploy Git Repository on Coolify (Build on Server)
+
+1. **Create Application** in Coolify:
+   - Source: Your Git repository (`smashysubash/organize-notion-personal-agent`)
    - Build Pack: **Dockerfile** (auto-detected)
    - Port: `4173`
 
-2. **Add Environment Variables** in Coolify → Application → Environment:
-   - Paste all variables from your `.env`
+2. **Add Environment Variables**:
+   - Paste all variables from your `.env`.
 
-3. **Optional: Persistent Playbook Volume**
-   - Coolify → Application → Volumes → Add:
-     - Host: `/opt/second-brain/SECOND_BRAIN_PLAYBOOK.md`
-     - Container: `/app/SECOND_BRAIN_PLAYBOOK.md`
-     - Read-only: ✓
+3. **Deploy**:
+   - Click **Deploy**.
 
-4. **Deploy**
+---
 
-### 3. Access
+## How to Create a Release & Publish New Images
 
-- Open `http://<coolify-lan-ip>:4173` from any LAN device
-- Or add local DNS: `second-brain.local → <coolify-lan-ip>`
+Whenever you want to release a new version:
+
+### 1. Using Git Tags (Automated GitHub Actions CI/CD)
+```bash
+# 1. Commit any recent changes
+git add .
+git commit -m "Release v0.1.0"
+git push origin main
+
+# 2. Create and push a version tag
+git tag v0.1.0
+git push origin v0.1.0
+```
+
+### 2. What GitHub Actions Does Automatically
+- Compiles TypeScript and packages production dependencies.
+- Builds multi-arch Docker images for both `linux/amd64` (x86 servers, VPS, Proxmox) and `linux/arm64` (Raspberry Pi, Apple Silicon, ARM VPS).
+- Publishes images to `ghcr.io/smashysubash/organize-notion-personal-agent:v0.1.0` and `ghcr.io/smashysubash/organize-notion-personal-agent:latest`.
+- Creates a GitHub Release with auto-generated changelog notes.
+
+### 3. Update Coolify
+In Coolify, simply click **Redeploy** on your application to pull the newest image tag.
 
 ---
 

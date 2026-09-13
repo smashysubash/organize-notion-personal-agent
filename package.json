@@ -6,8 +6,9 @@
   "type": "module",
   "scripts": {
     "dev": "tsx watch src/index.ts",
-    "start": "tsx src/index.ts",
-    "build": "tsc -p tsconfig.json",
+    "start": "node dist/index.js",
+    "start:tsx": "tsx src/index.ts",
+    "build": "tsc -p tsconfig.json && node -e \"fs.cpSync('src/server/public', 'dist/server/public', { recursive: true })\"",
     "triage": "tsx src/jobs/triage.ts",
     "digest": "tsx src/jobs/digest.ts",
     "hygiene": "tsx src/jobs/hygiene.ts",
