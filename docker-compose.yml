@@ -1,0 +1,12 @@
+version: '3.8'
+
+services:
+  second-brain:
+    build: .
+    container_name: second-brain-agent
+    restart: unless-stopped
+    env_file: .env
+    ports:
+      - "4173:4173"
+    volumes:
+      - ./SECOND_BRAIN_PLAYBOOK.md:/app/SECOND_BRAIN_PLAYBOOK.md:ro

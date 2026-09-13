@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Second Brain Console</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header>
+    <h1>🧠 Second Brain Console</h1>
+    <div class="actions">
+      <button data-job="triage">Organize Inbox</button>
+      <button data-job="digest">Run Digest</button>
+      <button data-job="hygiene">Run Hygiene Pass</button>
+      <button data-job="portfolio">Draft Portfolio Blurbs</button>
+      <button data-job="linkedin">Draft LinkedIn Posts</button>
+    </div>
+  </header>
+
+  <nav class="tabs">
+    <button class="tab active" data-type="">All</button>
+    <button class="tab" data-type="Digest">Digests</button>
+    <button class="tab" data-type="Hygiene Suggestion">Hygiene</button>
+    <button class="tab" data-type="Portfolio Draft">Portfolio</button>
+    <button class="tab" data-type="LinkedIn Draft">LinkedIn</button>
+  </nav>
+
+  <main id="list">Loading…</main>
+
+  <script src="app.js"></script>
+</body>
+</html>

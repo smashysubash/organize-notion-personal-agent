@@ -1,0 +1,30 @@
+{
+  "name": "second-brain-agent",
+  "version": "0.1.0",
+  "description": "Standalone agent service + web console for the personal Notion Second Brain",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "start": "tsx src/index.ts",
+    "build": "tsc -p tsconfig.json",
+    "triage": "tsx src/jobs/triage.ts",
+    "digest": "tsx src/jobs/digest.ts",
+    "hygiene": "tsx src/jobs/hygiene.ts",
+    "portfolio": "tsx src/jobs/portfolio.ts",
+    "linkedin": "tsx src/jobs/linkedin.ts"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.32.1",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.1",
+    "node-cron": "^3.0.3"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.21",
+    "@types/node": "^22.9.0",
+    "@types/node-cron": "^3.0.11",
+    "tsx": "^4.19.2",
+    "typescript": "^5.6.3"
+  }
+}
