@@ -45,6 +45,7 @@ export function createApp() {
       );
       res.json(withBody);
     } catch (err) {
+      console.error("[api] GET /api/suggestions error:", (err as Error).message);
       res.status(500).json({ error: (err as Error).message });
     }
   });
@@ -54,6 +55,7 @@ export function createApp() {
       await approveSuggestion(req.params.id);
       res.json({ ok: true });
     } catch (err) {
+      console.error(`[api] POST /api/suggestions/${req.params.id}/approve error:`, (err as Error).message);
       res.status(500).json({ error: (err as Error).message });
     }
   });
@@ -63,6 +65,7 @@ export function createApp() {
       await dismissSuggestion(req.params.id);
       res.json({ ok: true });
     } catch (err) {
+      console.error(`[api] POST /api/suggestions/${req.params.id}/dismiss error:`, (err as Error).message);
       res.status(500).json({ error: (err as Error).message });
     }
   });

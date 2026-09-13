@@ -57,16 +57,15 @@ export const config = {
   },
 };
 
-// Fixed IDs for this workspace's "Second Brain" structure — created once,
-// not secrets, so they live in code rather than .env.
+// Fixed IDs for this workspace's "Second Brain" structure — can be overridden via .env if needed.
 export const ids = {
-  hubPage: "3cbb184a-1062-812a-93a2-f4884d9ec931",
-  topics: "75c182b4-e834-485f-9c2d-d716833f09b9",
-  areas: "5b45c22f-3696-4b26-a4bc-84e151e98c30",
-  projects: "80938e70-8571-41ff-8572-5e7703527391",
-  resources: "86879b72-c593-4588-8bec-db3a9c15ba1a",
-  ideasVault: "f69286cd-f0de-4e6a-ba77-c6fc2964675f",
-  dailyJournal: "edf7a341-cae6-44d2-8f22-8edbc264d165",
-  inbox: "ed109753-0b87-4a3d-b3e5-c2ff00ec246b",
-  suggestions: "5b4ade7d-857c-482c-9d0c-516a4b4a7a84",
+  hubPage: process.env.NOTION_HUB_PAGE_ID ?? "3cbb184a-1062-812a-93a2-f4884d9ec931",
+  topics: process.env.NOTION_TOPICS_ID ?? "0b25b405-8ef9-4744-8730-4f0ea88c739c",
+  areas: process.env.NOTION_AREAS_ID ?? "ce49db14-5982-4ba5-a05c-a5a2d2e14df1",
+  projects: process.env.NOTION_PROJECTS_ID ?? "1622d4e5-b6d7-4c4e-9042-d9bb6d0ac7bb",
+  resources: process.env.NOTION_RESOURCES_ID ?? "c420a4f4-f1c6-4131-b32d-24f7ec853057",
+  ideasVault: process.env.NOTION_IDEAS_VAULT_ID ?? "650e6758-eb31-4a80-ad1a-56082d38548a",
+  dailyJournal: process.env.NOTION_DAILY_JOURNAL_ID ?? "bce216b0-f607-449d-bc7e-4f08287e04af",
+  inbox: process.env.NOTION_INBOX_ID ?? "e2fc67f9-0954-468c-bcf3-322f30b5d2d2",
+  suggestions: process.env.NOTION_SUGGESTIONS_ID ?? "03428609-3106-46da-8454-b7dc6f39665b",
 };

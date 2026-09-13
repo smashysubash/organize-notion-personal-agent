@@ -1,6 +1,6 @@
 import { config } from "../config.js";
 
-const NOTION_VERSION = "2025-09-03";
+const NOTION_VERSION = "2022-06-28";
 const BASE_URL = "https://api.notion.com/v1";
 
 async function request<T>(path: string, method: string, body?: unknown): Promise<T> {
@@ -38,7 +38,7 @@ export async function queryDataSource(
     if (opts.sorts) body.sorts = opts.sorts;
     if (cursor) body.start_cursor = cursor;
     const page = await request<{ results: NotionPage[]; has_more: boolean; next_cursor: string | null }>(
-      `/data_sources/${dataSourceId}/query`,
+      `/databases/${dataSourceId}/query`,
       "POST",
       body
     );
@@ -49,12 +49,16 @@ export async function queryDataSource(
 }
 
 export async function createPage(opts: {
-  parent: { data_source_id: string } | { page_id: string };
+  parent: { database_id: string } | { page_id: string } | { data_source_id: string };
   properties: Record<string, unknown>;
   children?: unknown[];
   icon?: { type: "emoji"; emoji: string };
 }): Promise<NotionPage> {
-  return request<NotionPage>("/pages", "POST", opts);
+  const parent =
+    "data_source_id" in opts.parent
+      ? { database_id: (opts.parent as any).data_source_id }
+      : opts.parent;
+  return request<NotionPage>("/pages", "POST", { ...opts, parent });
 }
 
 export async function updatePage(
