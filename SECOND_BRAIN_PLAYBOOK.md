@@ -58,3 +58,4 @@ Good to have:
 - Never touch any workspace other than the connected personal "s subash's Notion" workspace.
 - Never call any LinkedIn API or post anything automatically — LinkedIn output is draft-only, always reviewed by a human before use.
 - Never execute a Hygiene merge without explicit Approve.
+<!-- to build -->
