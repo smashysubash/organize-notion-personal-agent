@@ -17,6 +17,38 @@
     </div>
   </header>
 
+  <section class="capture-container">
+    <div class="capture-box">
+      <div class="capture-header">
+        <div class="capture-title-group">
+          <h2>✨ Quick Capture &amp; Organize</h2>
+          <p class="capture-description">
+            Put any text here — raw thoughts, meeting notes, tasks, ideas, bookmarks, or a brain dump. The AI will reframe and file them into the right place in your Notion Second Brain.
+          </p>
+        </div>
+      </div>
+      <form id="capture-form">
+        <textarea
+          id="capture-input"
+          placeholder="Type or paste any text... e.g.&#10;• Need to finish the deployment script by next Friday&#10;• Great guide on Postgres performance: https://...&#10;• Idea: Automated daily newsletter curator&#10;• Reflection on today's sprint planning and focus areas"
+          rows="4"
+          required
+        ></textarea>
+        <div class="capture-footer">
+          <span class="capture-hint">Press <kbd>Ctrl</kbd>+<kbd>Enter</kbd> or <kbd>⌘</kbd>+<kbd>Enter</kbd> to submit</span>
+          <div class="capture-buttons">
+            <button type="button" id="capture-clear-btn" class="btn-clear">Clear</button>
+            <button type="submit" id="capture-submit-btn" class="btn-organize">
+              <span class="btn-organize-text">✨ Reframe &amp; Organize</span>
+            </button>
+          </div>
+        </div>
+      </form>
+      <div id="capture-status" class="capture-status" style="display: none;"></div>
+      <div id="capture-results" class="capture-results" style="display: none;"></div>
+    </div>
+  </section>
+
   <nav class="tabs">
     <button class="tab active" data-type="">All</button>
     <button class="tab" data-type="Digest">Digests</button>

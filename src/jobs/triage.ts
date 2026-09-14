@@ -34,7 +34,7 @@ async function fetchUrlText(url: string): Promise<string> {
   }
 }
 
-async function findOrCreateTodayJournal(): Promise<string> {
+export async function findOrCreateTodayJournal(): Promise<string> {
   const todayIso = new Date().toISOString().slice(0, 10);
   const existing = await queryDataSource(ids.dailyJournal, {
     filter: { property: "Date", date: { equals: todayIso } },
@@ -48,7 +48,7 @@ async function findOrCreateTodayJournal(): Promise<string> {
 }
 
 let areaCache: NotionPage[] | null = null;
-async function findOrCreateArea(name: string): Promise<string> {
+export async function findOrCreateArea(name: string): Promise<string> {
   if (!areaCache) areaCache = await queryDataSource(ids.areas);
   const match = areaCache.find((p) => plainText(p.properties.Name).trim().toLowerCase() === name.trim().toLowerCase());
   if (match) return match.id;

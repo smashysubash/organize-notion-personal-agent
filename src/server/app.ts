@@ -10,6 +10,7 @@ import { runDigest } from "../jobs/digest.js";
 import { runHygienePass } from "../jobs/hygiene.js";
 import { runPortfolioDrafting } from "../jobs/portfolio.js";
 import { runLinkedInDrafts } from "../jobs/linkedin.js";
+import { reframeAndOrganize } from "../jobs/organize.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -85,6 +86,24 @@ export function createApp() {
       const result = await job();
       res.json({ ok: true, result });
     } catch (err) {
+      res.status(500).json({ error: (err as Error).message });
+    }
+  });
+
+  app.post("/api/organize", async (req, res) => {
+    try {
+      const text = req.body?.text;
+      if (typeof text !== "string" || !text.trim()) {
+        return res.status(400).json({ error: "Text input is required." });
+      }
+      if (text.length > 50000) {
+        return res.status(400).json({ error: "Text input exceeds maximum limit of 50,000 characters." });
+      }
+
+      const result = await reframeAndOrganize(text.trim());
+      res.json(result);
+    } catch (err) {
+      console.error("[api] POST /api/organize error:", (err as Error).message);
       res.status(500).json({ error: (err as Error).message });
     }
   });

@@ -118,3 +118,159 @@ document.querySelectorAll("[data-job]").forEach((btn) => {
 });
 
 loadSuggestions();
+
+// Quick Capture & Organize handling
+const captureForm = document.getElementById("capture-form");
+const captureInput = document.getElementById("capture-input");
+const captureSubmitBtn = document.getElementById("capture-submit-btn");
+const captureClearBtn = document.getElementById("capture-clear-btn");
+const captureStatus = document.getElementById("capture-status");
+const captureResults = document.getElementById("capture-results");
+
+if (captureClearBtn && captureInput) {
+  captureClearBtn.addEventListener("click", () => {
+    captureInput.value = "";
+    if (captureStatus) captureStatus.style.display = "none";
+    if (captureResults) {
+      captureResults.replaceChildren();
+      captureResults.style.display = "none";
+    }
+    captureInput.focus();
+  });
+}
+
+if (captureInput && captureForm) {
+  captureInput.addEventListener("keydown", (e) => {
+    if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
+      e.preventDefault();
+      captureForm.requestSubmit();
+    }
+  });
+}
+
+if (captureForm) {
+  captureForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const text = captureInput.value.trim();
+    if (!text) return;
+
+    captureSubmitBtn.disabled = true;
+    const btnTextSpan = captureSubmitBtn.querySelector(".btn-organize-text");
+    const originalBtnText = btnTextSpan ? btnTextSpan.textContent : captureSubmitBtn.textContent;
+    if (btnTextSpan) {
+      btnTextSpan.textContent = "Reframing & Organizing…";
+    } else {
+      captureSubmitBtn.textContent = "Reframing & Organizing…";
+    }
+
+    captureStatus.className = "capture-status loading";
+    captureStatus.textContent = "🧠 Reframing your text and organizing into Notion…";
+    captureStatus.style.display = "block";
+    captureResults.replaceChildren();
+    captureResults.style.display = "none";
+
+    try {
+      const res = await fetch("/api/organize", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text }),
+      });
+
+      const data = await res.json().catch(() => ({}));
+
+      if (!res.ok) {
+        captureStatus.className = "capture-status error";
+        captureStatus.textContent = `Organization failed (${res.status}): ${data.error || res.statusText}`;
+        return;
+      }
+
+      captureStatus.style.display = "none";
+      captureResults.replaceChildren();
+
+      // Render summary banner
+      const banner = document.createElement("div");
+      banner.className = "results-summary-banner";
+      banner.textContent = `✓ Successfully reframed & organized ${data.filedCount || data.items?.length || 0} item(s) into your Notion Second Brain`;
+      captureResults.appendChild(banner);
+
+      // Render each item
+      if (Array.isArray(data.items)) {
+        data.items.forEach((item) => {
+          const card = document.createElement("div");
+          card.className = "result-card";
+
+          const header = document.createElement("div");
+          header.className = "result-card-header";
+
+          const titleEl = document.createElement("div");
+          titleEl.className = "result-card-title";
+          titleEl.textContent = item.title;
+
+          const badge = document.createElement("span");
+          const destClass = (item.destination || "").toLowerCase();
+          badge.className = `result-badge badge-${destClass}`;
+          badge.textContent = item.destination;
+
+          header.appendChild(titleEl);
+          header.appendChild(badge);
+          card.appendChild(header);
+
+          if (item.reframedContent) {
+            const body = document.createElement("div");
+            body.className = "result-card-body";
+            body.textContent = item.reframedContent;
+            card.appendChild(body);
+          }
+
+          if (Array.isArray(item.topics) && item.topics.length > 0) {
+            const tags = document.createElement("div");
+            tags.className = "result-tags";
+            item.topics.forEach((topic) => {
+              const tag = document.createElement("span");
+              tag.className = "result-tag";
+              tag.textContent = `#${topic}`;
+              tags.appendChild(tag);
+            });
+            card.appendChild(tags);
+          }
+
+          if (item.url) {
+            const footer = document.createElement("div");
+            footer.className = "result-card-footer";
+            const link = document.createElement("a");
+            link.className = "result-link";
+            link.href = item.url;
+            link.target = "_blank";
+            link.rel = "noopener";
+            link.textContent = "Open in Notion ↗";
+            footer.appendChild(link);
+            card.appendChild(footer);
+          }
+
+          if (item.error) {
+            const errDiv = document.createElement("div");
+            errDiv.style.color = "#ef5350";
+            errDiv.style.fontSize = "0.8rem";
+            errDiv.textContent = `Error: ${item.error}`;
+            card.appendChild(errDiv);
+          }
+
+          captureResults.appendChild(card);
+        });
+      }
+
+      captureResults.style.display = "grid";
+      captureInput.value = "";
+    } catch (err) {
+      captureStatus.className = "capture-status error";
+      captureStatus.textContent = `Network / client error: ${err.message}`;
+    } finally {
+      captureSubmitBtn.disabled = false;
+      if (btnTextSpan) {
+        btnTextSpan.textContent = originalBtnText;
+      } else {
+        captureSubmitBtn.textContent = originalBtnText;
+      }
+    }
+  });
+}

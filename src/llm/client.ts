@@ -84,20 +84,33 @@ export async function askLLM(userPrompt: string, maxTokens = 1024): Promise<stri
   return provider.complete(userPrompt, maxTokens);
 }
 
-/** Strips a ```json ... ``` (or bare ```) fence some models wrap JSON in
- * despite being told not to — not every model follows that instruction as
- * reliably as Claude does. */
-function stripCodeFence(text: string): string {
+/** Extracts JSON payload from LLM responses, stripping any markdown code fences
+ * or preamble/postamble text that some models generate. */
+function extractJSON(text: string): string {
   const trimmed = text.trim();
-  const fenced = trimmed.match(/^```(?:json)?\s*([\s\S]*?)\s*```$/i);
-  return fenced ? fenced[1] : trimmed;
+  // 1. Try markdown code block anywhere in text
+  const matchFence = trimmed.match(/```(?:json)?\s*([\s\S]*?)\s*```/i);
+  if (matchFence) {
+    return matchFence[1].trim();
+  }
+  // 2. Try finding outermost [ ... ] or { ... }
+  const firstBracket = trimmed.search(/[\[\{]/);
+  if (firstBracket !== -1) {
+    const isArray = trimmed[firstBracket] === "[";
+    const lastBracket = isArray ? trimmed.lastIndexOf("]") : trimmed.lastIndexOf("}");
+    if (lastBracket > firstBracket) {
+      return trimmed.slice(firstBracket, lastBracket + 1);
+    }
+  }
+  return trimmed;
 }
 
 /** Same as askLLM but parses the reply as JSON, per the caller's schema instructions. */
-export async function askLLMJSON<T>(userPrompt: string, maxTokens = 1024): Promise<T> {
+export async function askLLMJSON<T>(userPrompt: string, maxTokens = 2048): Promise<T> {
   const text = await askLLM(
     `${userPrompt}\n\nRespond with ONLY valid JSON, no prose, no markdown fences.`,
     maxTokens
   );
-  return JSON.parse(stripCodeFence(text)) as T;
+  return JSON.parse(extractJSON(text)) as T;
 }
+

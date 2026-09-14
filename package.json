@@ -1,6 +1,6 @@
 {
   "name": "second-brain-agent",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Standalone agent service + web console for the personal Notion Second Brain",
   "private": true,
   "type": "module",

@@ -29,6 +29,7 @@ See `SECOND_BRAIN_PLAYBOOK.md` for the full rules this agent (and any other AI t
 ## Day-to-day capture
 
 Drop anything into the **Inbox** database in Notion — a thought, a pasted link, a quick task. Any of these work, they all just create an Inbox row:
+- **Web Console Quick Capture**: Type or paste any unstructured text, brain dump, or links into the **✨ Quick Capture & Organize** box on the console (http://localhost:4173). The AI immediately reframes each thought and organizes it into the right database in Notion (Projects, Resources, Ideas, Daily Journal, or Areas) with clickable links.
 - Notion mobile app's quick-add, pointed at the Inbox database.
 - Notion's Web Clipper browser extension, pointed at the Inbox database.
 - Typing directly into Inbox in the Notion app/web.
@@ -50,7 +51,7 @@ The agent isn't tied to Claude — `src/llm/client.ts` supports multiple provide
 
 - `LLM_PROVIDER=anthropic` (default) — uses Anthropic SDK directly (`ANTHROPIC_API_KEY` or `LLM_API_KEY`, model via `LLM_MODEL`, defaults to `claude-sonnet-5`). Gets Anthropic prompt caching on the Playbook system prompt.
 - `LLM_PROVIDER=nvidia` — NVIDIA free API (Nemotron 3 Ultra, Llama 3.1 405B/70B, Mistral Large 2). Set `NVIDIA_API_KEY`, optionally `LLM_MODEL` (defaults to `nvidia/nemotron-3-ultra`). Free at https://build.nvidia.com
-- `LLM_PROVIDER=groq` — Groq free API (Llama 3.1 70B/8B, Mixtral, Gemma 2). Set `GROQ_API_KEY`, optionally `LLM_MODEL` (defaults to `llama-3.1-70b-versatile`). Fastest inference at https://console.groq.com
+- `LLM_PROVIDER=groq` — Groq free API (Qwen 3.8 27B, GPT-OSS 120B/20B, Qwen 3.6 27B). Set `GROQ_API_KEY`, optionally `LLM_MODEL` (defaults to `qwen/qwen3.8-27b`). Fastest inference at https://console.groq.com
 - `LLM_PROVIDER=openai` — any OpenAI-compatible backend: OpenAI, Ollama, OpenRouter, Together, LM Studio, vLLM, Azure OpenAI, etc. Set `LLM_MODEL`, `LLM_BASE_URL` (defaults to `https://api.openai.com/v1`), `LLM_API_KEY` (or `OPENAI_API_KEY`).
 
 No job code changes needed — every job calls provider-neutral `askLLM`/`askLLMJSON`.
@@ -69,6 +70,7 @@ src/
   notion/topics.ts     Topics graph find-or-create + bulk-load
   llm/client.ts        pluggable LLM client (Anthropic or any OpenAI-compatible backend), Playbook loaded as system prompt
   jobs/triage.ts        Inbox triage
+  jobs/organize.ts      Quick capture & organize (reframe unstructured text -> Notion)
   jobs/digest.ts        weekly/on-demand digest
   jobs/hygiene.ts       topic-merge + orphaned-idea suggestions
   jobs/portfolio.ts     portfolio blurb drafting
